@@ -11,41 +11,42 @@ const getMovies = async (req, res, next) => {
 
 const createMovie = (req, res, next) => {
   const data = req.body;
-  const ownerId = req.user._id;
+  const owner = req.user._id;
 
-  Movie.create({ ...data, ownerId }).then((newMovie) => {
-    res
-      .status(HTTP_STATUS_OK)
-      .send(newMovie)
-      .catch((err) => {
-        if (err instanceof mongoose.Error.ValidationError) {
-          next(Error('Ошибка валидации'));
-        } else {
-          next(err);
-        }
-      });
-  });
+  Movie.create({ ...data, owner })
+    .then((newMovie) => {
+      res.status(HTTP_STATUS_OK).send(newMovie);
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        next(Error('Ошибка валидации'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const deleteMovie = (req, res, next) => {
-  const movieId = req.params;
+  const { _id } = req.params;
   const userId = req.user._id;
 
-  if (!mongoose.isValidObjectId(movieId)) {
+  if (!mongoose.isValidObjectId(_id)) {
     next(Error('Невалидный ID'));
   }
 
-  Movie.findById(movieId)
+  Movie.findById(_id)
     .then((movie) => {
       if (!movie) {
-        next(Error(`Фильм c ID:${movieId} не найден`));
+        next(Error(`Фильм c ID:${_id} не найден`));
       }
       if (movie.owner._id.toString() !== userId) {
         next(Error('Можно удалять только свои карточки'));
       } else {
-        Movie.deleteOne(movieId).then((deletedMovie) => {
-          res.status(HTTP_STATUS_OK).send(deletedMovie).catch(next);
-        });
+        Movie.findByIdAndDelete(_id)
+          .then((deletedMovie) => {
+            res.status(HTTP_STATUS_OK).send(deletedMovie);
+          })
+          .catch(next);
       }
     })
     .catch(next);

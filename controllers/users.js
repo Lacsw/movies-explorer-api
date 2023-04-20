@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { HTTP_STATUS_OK } = require('http2').constants;
 
-const User = require('../models/ user');
+const User = require('../models/user');
 
 const getUserInfo = (req, res, next) => {
   const userId = req.user._id;
