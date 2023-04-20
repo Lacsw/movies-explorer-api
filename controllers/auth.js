@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const User = require('../models/user');
+const BadRequestError = require('../errors/bad-request-err');
+const ConflictError = require('../errors/conflict-err');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
 const { MONGO_DUPLICATE_CODE } = require('../utils/constants');
@@ -43,9 +45,9 @@ const createUser = (req, res, next) => {
     .then((newUser) => res.status(HTTP_STATUS_CREATED).send(newUser.toJSON()))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
-        next(Error(error.message));
+        next(new BadRequestError(error.message));
       } else if (error.code === MONGO_DUPLICATE_CODE) {
-        next(Error('Пользователь с такой почтой уже существует.'));
+        next(new ConflictError('Пользователь с такой почтой уже существует.'));
       } else {
         next(error);
       }
