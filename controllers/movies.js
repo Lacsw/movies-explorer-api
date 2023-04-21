@@ -30,22 +30,22 @@ const createMovie = (req, res, next) => {
 };
 
 const deleteMovie = (req, res, next) => {
-  const { _id } = req.params;
+  const { id } = req.params;
   const userId = req.user._id;
 
-  if (!mongoose.isValidObjectId(_id)) {
+  if (!mongoose.isValidObjectId(id)) {
     next(new BadRequestError('Невалидный ID'));
   }
 
-  Movie.findById(_id)
+  Movie.findById(id)
     .then((movie) => {
       if (!movie) {
-        next(new NotFoundError(`Фильм c ID:${_id} не найден`));
+        next(new NotFoundError(`Фильм c ID:${id} не найден`));
       }
       if (movie.owner._id.toString() !== userId) {
         next(new ForbiddenError('Можно удалять только свои карточки'));
       } else {
-        Movie.findByIdAndDelete(_id)
+        Movie.findByIdAndDelete(id)
           .then((deletedMovie) => {
             res.status(HTTP_STATUS_OK).send(deletedMovie);
           })

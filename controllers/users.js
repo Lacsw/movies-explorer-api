@@ -22,7 +22,7 @@ const updateUserInfo = (req, res, next) => {
   const userId = req.user._id;
   const data = {
     name: req.body.name,
-    about: req.body.about,
+    email: req.body.email,
   };
 
   User.findByIdAndUpdate(userId, data, {
