@@ -1,4 +1,4 @@
-# Проект: [Movies-explorer API](https://github.com/Lacsw/movies-explorer-api)
+# Project: [Movies Explorer API](https://github.com/Lacsw/movies-explorer-api)
 
 URI: https://api.movies-tourer.nomoredomains.monster
 
