@@ -2,17 +2,25 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
+const helmet = require('helmet');
 require('dotenv').config();
 
 const router = require('./routes/index');
 const errorHandler = require('./middlewares/error-handler');
+const cors = require('./middlewares/cors-handler');
+const limiter = require('./middlewares/limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+const { DB_URL } = require('./utils/config');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
-mongoose.connect('mongodb://127.0.0.1:27017/bitfilmsdb');
+mongoose.connect(DB_URL);
 
+app.use(cors);
+app.use(limiter);
+app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 
