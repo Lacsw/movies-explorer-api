@@ -9,7 +9,11 @@ const BadRequestError = require('../errors/bad-request-err');
 const ConflictError = require('../errors/conflict-err');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
-const { MONGO_DUPLICATE_CODE } = require('../utils/constants');
+const {
+  MONGO_DUPLICATE_CODE,
+  responseMessage,
+  errorMessage,
+} = require('../utils/constants');
 
 const { HTTP_STATUS_CREATED } = http2.constants;
 
@@ -31,7 +35,7 @@ const login = (req, res, next) => {
           sameSite: NODE_ENV === 'production' ? true : 'none',
           secure: NODE_ENV === 'production',
         })
-        .send({ message: 'Вы вошли в акканут' });
+        .send({ message: responseMessage.success });
     })
     .catch(next);
 };
@@ -45,9 +49,9 @@ const createUser = (req, res, next) => {
     .then((newUser) => res.status(HTTP_STATUS_CREATED).send(newUser.toJSON()))
     .catch((error) => {
       if (error instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError(error.message));
+        next(new BadRequestError(errorMessage.validation));
       } else if (error.code === MONGO_DUPLICATE_CODE) {
-        next(new ConflictError('Пользователь с такой почтой уже существует.'));
+        next(new ConflictError(errorMessage.duplicateEmail));
       } else {
         next(error);
       }
@@ -62,7 +66,7 @@ const logout = (req, res, next) => {
         sameSite: NODE_ENV === 'production' ? true : 'none',
         secure: NODE_ENV === 'production',
       })
-      .send({ message: 'Выход' });
+      .send({ message: responseMessage.exit });
   } catch (error) {
     next(error);
   }

@@ -6,6 +6,8 @@ const NotFoundError = require('../errors/not-found-err');
 const ForbiddenError = require('../errors/forbidden-err');
 const Movie = require('../models/movie');
 
+const { errorMessage } = require('../utils/constants');
+
 const getMovies = async (req, res, next) => {
   Movie.find({})
     .then((movies) => res.status(HTTP_STATUS_OK).send(movies))
@@ -22,7 +24,7 @@ const createMovie = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError('Ошибка валидации'));
+        next(new BadRequestError(errorMessage.validation));
       } else {
         next(err);
       }
@@ -34,16 +36,16 @@ const deleteMovie = (req, res, next) => {
   const userId = req.user._id;
 
   if (!mongoose.isValidObjectId(id)) {
-    next(new BadRequestError('Невалидный ID'));
+    next(new BadRequestError(errorMessage.validationID));
   }
 
   Movie.findById(id)
     .then((movie) => {
       if (!movie) {
-        next(new NotFoundError(`Фильм c ID:${id} не найден`));
+        next(new NotFoundError(errorMessage.filmNotFound));
       }
       if (movie.owner._id.toString() !== userId) {
-        next(new ForbiddenError('Можно удалять только свои карточки'));
+        next(new ForbiddenError(errorMessage.forbidden));
       } else {
         Movie.findByIdAndDelete(id)
           .then((deletedMovie) => {
