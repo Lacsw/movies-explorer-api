@@ -20,6 +20,7 @@ const errorMessage = {
   incorrectUrlFormat: 'Неверный формат ссылки',
   incorrectEmailFormat: 'Неверный формат почты',
   incorrectEmaiOrPassword: 'Неправильные почта или пароль',
+  server: 'Ошибка сервера',
 };
 
 module.exports = {

@@ -9,7 +9,7 @@ const Movie = require('../models/movie');
 const { errorMessage } = require('../utils/constants');
 
 const getMovies = async (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user._id })
     .then((movies) => res.status(HTTP_STATUS_OK).send(movies))
     .catch(next);
 };
