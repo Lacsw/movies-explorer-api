@@ -33,7 +33,7 @@ const login = (req, res, next) => {
           maxAge: 3600000,
           httpOnly: true,
           sameSite: NODE_ENV === 'production' ? true : 'none',
-          secure: NODE_ENV === 'production',
+          secure: true,
         })
         .send({ message: responseMessage.success });
     })
@@ -64,7 +64,7 @@ const logout = (req, res, next) => {
       .clearCookie('jwt', {
         httpOnly: true,
         sameSite: NODE_ENV === 'production' ? true : 'none',
-        secure: NODE_ENV === 'production',
+        secure: true,
       })
       .send({ message: responseMessage.exit });
   } catch (error) {
